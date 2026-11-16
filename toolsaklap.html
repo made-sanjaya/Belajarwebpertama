@@ -32,6 +32,7 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
     <button id="navHome" class="active" onclick="showHome()"><span class="navicon">⌂</span><span class="navtext">Beranda</span></button>
     <button id="navLra" onclick="openTool('lra')"><span class="navicon">▤</span><span class="navtext">Konverter LRA</span></button>
     <button id="navBix" onclick="openTool('bix')"><span class="navicon">⇄</span><span class="navtext">Konverter BIX</span></button>
+    <button id="navAset" onclick="openTool('aset')"><span class="navicon">▧</span><span class="navtext">Konverter Aset</span></button>
   </nav>
   <div class="sidebottom">TOOLS AKLAP<br>Alat bantu pengolahan data</div>
 </aside>
@@ -44,6 +45,7 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
       <div class="toolgrid">
         <button class="toolcard" onclick="openTool('lra')"><div class="tooltop"><div class="toolicon">▤</div><span class="arrow">↗</span></div><h3>Konverter LRA Per Program</h3><p>Ubah file Excel LRA per program menjadi format rekap dengan struktur 22 kolom dan data SRO Belanja.</p><div class="toolfoot">Buka konverter LRA →</div></button>
         <button class="toolcard" onclick="openTool('bix')"><div class="tooltop"><div class="toolicon">⇄</div><span class="arrow">↗</span></div><h3>Konverter Format BIX</h3><p>Gabungkan uraian transaksi BIX ke format empat kolom: tanggal, uraian, penerimaan, dan pengeluaran.</p><div class="toolfoot">Buka konverter BIX →</div></button>
+        <button class="toolcard" onclick="openTool('aset')"><div class="tooltop"><div class="toolicon">▧</div><span class="arrow">↗</span></div><h3>Konverter Aset</h3><p>Ubah laporan penyusutan aset tetap menjadi format ASET secara otomatis dari seluruh sheet Excel.</p><div class="toolfoot">Buka konverter aset →</div></button>
       </div>
       <div class="panel" style="margin-top:20px"><div class="panelhead"><h2>Informasi penggunaan</h2><span class="step">INFO</span></div><div class="note">Pilih salah satu menu di atas atau melalui navigasi di sisi kiri. Upload file Excel sesuai jenis konverter, jalankan proses, periksa preview, lalu unduh hasil konversi. Gunakan file sumber yang sesuai dengan format masing-masing tools.</div></div>
     </section>
@@ -79,15 +81,43 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
         <section class="panel"><div class="toolbar"><div><h2>3. Preview data</h2><span class="muted" id="bixPreviewInfo">Hasil konversi</span></div><button class="btn success" id="bixDownload">↓ Unduh Excel</button></div><div class="tablewrap"><table style="width:100%;min-width:650px"><thead><tr><th style="width:145px">Tanggal</th><th>Uraian</th><th style="width:155px;text-align:right">Penerimaan</th><th style="width:155px;text-align:right">Pengeluaran</th></tr></thead><tbody id="bixBody"></tbody></table></div></section>
       </section>
     </section>
+
+    <section id="asetView" class="hidden">
+      <button class="backbtn" onclick="showHome()">← Kembali ke menu tools</button>
+      <div class="toolheading"><div><div class="eyebrow">TOOLS AKLAP / KONVERSI EXCEL</div><h1>Konverter Aset</h1><p>Ubah laporan rpt108penyusutan_gab menjadi format ASET secara otomatis.</p></div><span class="step">ASET</span></div>
+      <section class="panel">
+        <div class="panelhead"><h2>1. Unggah file laporan penyusutan</h2><span class="step">01 · INPUT</span></div>
+        <p class="muted" style="margin:0 0 16px">Pilih file Excel (.xls, .xlsx, atau .xlsm). Semua sheet dalam file akan diproses.</p>
+        <label class="upload" id="asetDrop" for="asetFile"><div style="font-size:27px">⇧</div><strong>Letakkan file Excel di sini</strong><span class="muted">atau klik untuk memilih file dari perangkat Anda</span><input id="asetFile" type="file" accept=".xls,.xlsx,.xlsm"></label>
+        <div class="fileline" id="asetFileName"></div>
+        <div class="actions"><button class="btn primary" id="asetConvert" disabled>Proses Konversi</button><button class="btn secondary" id="asetReset">Reset</button></div>
+        <div class="status" id="asetStatus">Belum ada file yang dipilih.</div>
+      </section>
+      <section class="panel">
+        <div class="panelhead"><h2>2. Preview data hasil</h2><span class="step">HASIL KONVERSI</span></div>
+        <p class="muted" style="margin:0">Periksa hasil konversi sebelum mengunduh file Excel.</p>
+        <div class="stats" style="margin-top:16px">
+          <div class="stat"><span>Baris data ditemukan</span><b id="asetCount">0</b></div>
+          <div class="stat"><span>Sheet diproses</span><b id="asetSheets">0</b></div>
+          <div class="stat"><span>Nilai negatif</span><b id="asetNegatives">0</b></div>
+        </div>
+        <div class="tablewrap"><table style="width:100%;min-width:1150px"><thead><tr><th>Kelompok</th><th>Jenis</th><th>Kode SRO</th><th>SRO</th><th>Nilai Perolehan</th><th>Akumulasi Penyusutan Awal</th><th>Penyusutan Smt I</th><th>Penyusutan Smt II</th><th>Akumulasi Penyusutan Akhir</th><th>Nilai Buku</th></tr></thead><tbody id="asetPreview"><tr><td colspan="10" class="empty">Belum ada data. Unggah file untuk melihat preview.</td></tr></tbody></table></div>
+        <div class="actions"><button class="btn success" id="asetDownload" disabled>↓ Download Excel (FORMAT ASET)</button></div>
+        <p class="muted" style="margin:12px 0 0">Preview menampilkan maksimal 100 baris pertama. File hasil memuat seluruh data yang lolos kriteria kode SRO.</p>
+      </section>
+      <section class="panel"><div class="panelhead"><h2>3. Aturan konversi</h2><span class="step">PEMETAAN KOLOM</span></div>
+        <div class="note">Data hanya diambil dari baris yang memiliki kode SRO enam kelompok angka yang dipisahkan titik. Kelompok: merge C–G; Jenis: merge I–M; Kode SRO: merge B–D; SRO: merge J–M; Nilai Perolehan: R; Akumulasi Penyusutan Awal: V; Penyusutan Semester I/II: X/Z; Akumulasi Penyusutan Akhir: AC (menggunakan nilai merge AB:AC bila diperlukan); Nilai Buku: AE. Angka dalam tanda kurung dikonversi menjadi negatif. Sel angka kosong dianggap 0.</div>
+      </section>
+    </section>
   </main>
   <div class="foot">TOOLS AKLAP · Pemrosesan file dilakukan di browser Anda</div>
 </div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
-function showHome(){['homeView','lraView','bixView'].forEach(id=>$(id).classList.add('hidden'));$('homeView').classList.remove('hidden');setNav('navHome');$('crumbTail').textContent='/ Beranda';}
-function openTool(which){['homeView','lraView','bixView'].forEach(id=>$(id).classList.add('hidden'));$(which+'View').classList.remove('hidden');setNav(which==='lra'?'navLra':'navBix');$('crumbTail').textContent='/ '+(which==='lra'?'Konverter LRA Per Program':'Konverter Format BIX');window.scrollTo({top:0,behavior:'smooth'});}
-function setNav(id){['navHome','navLra','navBix'].forEach(x=>$(x).classList.toggle('active',x===id));}
+function showHome(){['homeView','lraView','bixView','asetView'].forEach(id=>$(id).classList.add('hidden'));$('homeView').classList.remove('hidden');setNav('navHome');$('crumbTail').textContent='/ Beranda';}
+function openTool(which){['homeView','lraView','bixView','asetView'].forEach(id=>$(id).classList.add('hidden'));$(which+'View').classList.remove('hidden');setNav(which==='lra'?'navLra':which==='bix'?'navBix':'navAset');$('crumbTail').textContent='/ '+(which==='lra'?'Konverter LRA Per Program':which==='bix'?'Konverter Format BIX':'Konverter Aset');window.scrollTo({top:0,behavior:'smooth'});}
+function setNav(id){['navHome','navLra','navBix','navAset'].forEach(x=>$(x).classList.toggle('active',x===id));}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 /* KONVERTER LRA */
@@ -125,6 +155,85 @@ function convertBix(rows,headerRow){let out=[],active=null;const finish=()=>{if(
 $('bixConvert').onclick=async()=>{if(!bixFileObj)return;if(typeof XLSX==='undefined'){bixStatus('Library Excel belum termuat. Periksa koneksi internet lalu muat ulang halaman.','error');return}$('bixConvert').disabled=true;bixStatus('Sedang membaca dan mengonversi file…');try{const data=await bixFileObj.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:true}),found=findBixSheet(wb);if(!found)throw new Error('Tidak ditemukan sheet dengan header URAIAN, PENERIMAAN, dan PENGELUARAN.');bixDate=bixDateFromRows(found.rows);if(!bixDate)throw new Error('Tanggal tidak ditemukan pada kalimat “JUMLAH MUTASI TGL”.');bixRows=convertBix(found.rows,found.headerRow);if(!bixRows.length)throw new Error('Tidak ditemukan transaksi dengan angka pada kolom D atau E.');renderBix();$('bixResult').classList.remove('hidden');bixStatus('Konversi berhasil dari sheet “'+found.name+'”.','ok')}catch(err){bixStatus(err.message||'Terjadi kesalahan saat memproses file.','error');$('bixResult').classList.add('hidden')}finally{$('bixConvert').disabled=false}};
 function renderBix(){const totalIn=bixRows.reduce((s,r)=>s+(r.penerimaan??0),0),totalOut=bixRows.reduce((s,r)=>s+(r.pengeluaran??0),0);$('bixCount').textContent=bixFmt.format(bixRows.length);$('bixTotalIn').textContent=bixMoney(totalIn);$('bixTotalOut').textContent=bixMoney(totalOut);$('bixPreviewInfo').textContent=bixRows.length+' transaksi · Tanggal '+bixDate;$('bixBody').innerHTML=bixRows.slice(0,100).map(r=>`<tr><td>${escapeHtml(r.tanggal)}</td><td>${escapeHtml(r.uraian)}</td><td class="num">${r.penerimaan===null?'—':bixFmt.format(r.penerimaan)}</td><td class="num">${r.pengeluaran===null?'—':bixFmt.format(r.pengeluaran)}</td></tr>`).join('');if(bixRows.length>100)$('bixBody').innerHTML+=`<tr><td colspan="4" class="empty">Preview menampilkan 100 dari ${bixFmt.format(bixRows.length)} transaksi. Seluruh data tetap ada di file hasil.</td></tr>`}
 $('bixDownload').onclick=()=>{const data=[['Tanggal','Uraian','Penerimaan','Pengeluaran'],...bixRows.map(r=>[r.tanggal,r.uraian,r.penerimaan,r.pengeluaran])],ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:24},{wch:75},{wch:20},{wch:20}];if(data.length>1)for(let r=1;r<data.length;r++)for(let c=2;c<=3;c++){const cell=XLSX.utils.encode_cell({r,c});if(ws[cell]&&ws[cell].v!==null&&ws[cell].v!==undefined)ws[cell].z='#,##0.00;[Red](#,##0.00);0.00'}const out=XLSX.utils.book_new();XLSX.utils.book_append_sheet(out,ws,'Gabungan BIX');const safeDate=bixDate.replace(/[\\/:*?"<>|]/g,'-').replace(/\s+/g,' ').trim();XLSX.writeFile(out,'Gabungan BIX Tanggal '+safeDate+'.xlsx')};
+
+/* KONVERTER ASET - logic adapted from the supplied Konverter Penyusutan Aset Tetap */
+const asetHeaders=['KELOMPOK','JENIS','Kode SRO','SRO','Nilai Perolehan','Akumulasi Penyusutan Awal','Penyusutan Smt I','Penyusutan Smt II','Akumulasi Penyusutan Akhir','Nilai Buku'];
+let asetOutput=[],asetSourceName='';
+const asetFile=$('asetFile'),asetDrop=$('asetDrop');
+function asetStatus(msg,isError=false){$('asetStatus').textContent=msg;$('asetStatus').className='status'+(isError?' error':'');}
+function asetLoadFile(file){
+  if(!file)return;
+  if(!/\.(xls|xlsx|xlsm)$/i.test(file.name)){asetFile.value='';$('asetFileName').textContent='';$('asetConvert').disabled=true;asetStatus('Format file harus .xls, .xlsx, atau .xlsm.',true);return;}
+  asetSourceName=file.name;$('asetFileName').textContent='✓ '+file.name;$('asetConvert').disabled=false;$('asetDownload').disabled=true;asetOutput=[];asetStatus('File siap diproses. Klik “Proses Konversi” untuk melanjutkan.');
+}
+asetFile.addEventListener('change',e=>asetLoadFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev=>asetDrop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();asetDrop.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>asetDrop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();asetDrop.classList.remove('drag')}));
+asetDrop.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(!f)return;try{const transfer=new DataTransfer();transfer.items.add(f);asetFile.files=transfer.files;}catch(err){}asetLoadFile(f);});
+function asetNorm(v){return v==null?'':String(v).trim();}
+function asetParseNum(v){
+  if(v==null||v==='')return 0;if(typeof v==='number')return Number.isFinite(v)?v:0;
+  let s=String(v).trim();if(!s)return 0;let neg=/^\(.*\)$/.test(s);if(neg)s=s.slice(1,-1);
+  s=s.replace(/\s/g,'').replace(/[Rp]/gi,'');
+  if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s))s=s.replace(/,/g,'');
+  else if(s.includes(',')&&!s.includes('.'))s=s.replace(',','.');else s=s.replace(/,/g,'');
+  const n=Number(s);return Number.isFinite(n)?Math.round((neg?-Math.abs(n):n)*100)/100:0;
+}
+function asetMergeAnchor(sheet,row,col){for(const m of (sheet['!merges']||[])){if(row>=m.s.r&&row<=m.e.r&&col>=m.s.c&&col<=m.e.c)return XLSX.utils.encode_cell(m.s);}return XLSX.utils.encode_cell({r:row,c:col});}
+function asetMergedText(sheet,row,startCol,endCol){
+  for(const m of (sheet['!merges']||[])){if(m.s.r<=row&&m.e.r>=row&&m.s.c>=startCol&&m.s.c<=endCol){const v=sheet[XLSX.utils.encode_cell(m.s)]?.v;if(v!=null&&String(v).trim())return String(v).trim();}}
+  for(let c=startCol;c<=endCol;c++){const v=sheet[XLSX.utils.encode_cell({r:row,c})]?.v;if(v!=null&&String(v).trim())return String(v).trim();}
+  return '';
+}
+function asetGetMergedAt(sheet,row,col){const a=asetMergeAnchor(sheet,row,col);return sheet[a]?.v??sheet[XLSX.utils.encode_cell({r:row,c:col})]?.v??'';}
+function asetIsCode(v){return /^\d+(?:\.\d+){5}$/.test(asetNorm(v));}
+function asetConvertWorkbook(wb){
+  const rows=[];
+  wb.SheetNames.forEach(name=>{
+    const sh=wb.Sheets[name],range=XLSX.utils.decode_range(sh['!ref']||'A1');let group='',kind='';
+    for(let r=range.s.r;r<=range.e.r;r++){
+      const g=asetMergedText(sh,r,2,6);
+      if(g&&/^(aset tetap|aset tetap yang direklasifikasi ke aset lainnya|aset tetap yang dihapuskan)$/i.test(g))group=g;
+      const iv=asetGetMergedAt(sh,r,8);if(iv!=null&&String(iv).trim())kind=String(iv).trim();
+      const code=asetNorm(asetGetMergedAt(sh,r,1));if(!asetIsCode(code))continue;
+      const sro=asetMergedText(sh,r,9,12);
+      const val=col=>asetParseNum(sh[XLSX.utils.encode_cell({r,c:col-1})]?.v);
+      let ac=sh[XLSX.utils.encode_cell({r,c:28})]?.v;if(ac==null||ac==='')ac=sh[XLSX.utils.encode_cell({r,c:27})]?.v;
+      rows.push([group,kind,code,sro,val(18),val(22),val(24),val(26),asetParseNum(ac),val(31)]);
+    }
+  });
+  return rows;
+}
+function asetRenderPreview(){
+  const body=$('asetPreview');body.innerHTML='';
+  if(!asetOutput.length){body.innerHTML='<tr><td colspan="10" class="empty">Tidak ada data untuk ditampilkan.</td></tr>';return;}
+  asetOutput.slice(0,100).forEach(r=>{const tr=document.createElement('tr');r.forEach((v,i)=>{const td=document.createElement('td');td.textContent=i>=4?Number(v).toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2}):(v??'');if(i>=4)td.className='num';tr.appendChild(td);});body.appendChild(tr);});
+}
+$('asetConvert').addEventListener('click',async()=>{
+  const f=asetFile.files[0];if(!f){asetStatus('Pilih file terlebih dahulu.',true);return;}
+  try{
+    asetStatus('Membaca dan mengonversi seluruh sheet…');
+    const data=await f.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:false});
+    asetOutput=asetConvertWorkbook(wb);asetRenderPreview();$('asetDownload').disabled=!asetOutput.length;
+    $('asetCount').textContent=asetOutput.length.toLocaleString('id-ID');$('asetSheets').textContent=wb.SheetNames.length;
+    $('asetNegatives').textContent=asetOutput.flatMap(r=>r.slice(4)).filter(v=>v<0).length.toLocaleString('id-ID');
+    asetStatus(asetOutput.length?`Konversi selesai: ${asetOutput.length.toLocaleString('id-ID')} baris dari ${wb.SheetNames.length} sheet.`:'Tidak ditemukan baris dengan kode SRO enam bagian. Periksa struktur file input.',!asetOutput.length);
+  }catch(e){console.error(e);asetStatus('Gagal membaca file. Pastikan file Excel tidak rusak atau diproteksi.',true);}
+});
+$('asetDownload').addEventListener('click',()=>{
+  if(!asetOutput.length)return;
+  const aoa=[[],asetHeaders,...asetOutput],ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:38},{wch:28},{wch:18},{wch:32},{wch:19},{wch:25},{wch:18},{wch:18},{wch:27},{wch:16}];
+  for(let r=2;r<aoa.length;r++)for(let c=4;c<10;c++){const addr=XLSX.utils.encode_cell({r,c});if(ws[addr]){ws[addr].t='n';ws[addr].z='#,##0.00;[Red](#,##0.00);-';}}
+  const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,ws,'FORMAT ASET');XLSX.writeFile(book,'FORMAT_ASET_Hasil_Konversi.xlsx');
+});
+$('asetReset').addEventListener('click',()=>{
+  asetFile.value='';asetOutput=[];asetSourceName='';$('asetFileName').textContent='';$('asetConvert').disabled=true;$('asetDownload').disabled=true;
+  $('asetCount').textContent='0';$('asetSheets').textContent='0';$('asetNegatives').textContent='0';
+  $('asetPreview').innerHTML='<tr><td colspan="10" class="empty">Belum ada data. Unggah file untuk melihat preview.</td></tr>';asetStatus('');
+});
+
 </script>
 </body>
 </html>
