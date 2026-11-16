@@ -57,6 +57,288 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
 #lraView .status{font-size:12px;color:#718096;margin-top:12px}
 @media(max-width:700px){#lraView .panel{padding:18px;border-radius:13px}#lraView .stats{grid-template-columns:1fr}#lraView .upload{min-height:155px;padding:20px}#lraView .toolbar{align-items:stretch}#lraView .toolbar input{width:100%;min-width:0}#lraView .pager{justify-content:space-between;flex-wrap:wrap}}
 
+
+/* ===== UI REFRESH GLOBAL TOOLS AKLAP — tanpa perubahan algoritma ===== */
+:root{
+  --ink:#18263d;--muted:#75839a;--line:#e4eaf2;--bg:#f3f6fb;
+  --surface:#ffffff;--blue:#315ee8;--blue-dark:#244bd0;--blue-soft:#edf2ff;
+  --green:#13845b;--green-soft:#e9f7f0;--red:#c34b4b;
+  --shadow:0 10px 30px rgba(23,42,75,.055);
+}
+body{background:linear-gradient(180deg,#f7f9fd 0,#f2f5fa 100%);color:var(--ink)}
+.sidebar{background:#17243b;color:#fff;border-right:0;padding:25px 16px;box-shadow:8px 0 28px rgba(20,35,60,.07)}
+.brand{padding:2px 9px 30px}
+.brandmark{background:linear-gradient(145deg,#6c8cff,#315ee8);border-radius:14px;box-shadow:0 8px 20px #315efb55}
+.brandname{color:#fff;letter-spacing:.06em}
+.brandtag{color:#aab8d0}
+.navlabel{color:#8190aa}
+.nav button{color:#c1cce0;border-radius:11px;padding:12px}
+.nav button:hover{background:#ffffff12;color:#fff}
+.nav button.active{background:#315ee833;color:#fff;box-shadow:inset 3px 0 #7fa0ff}
+.navicon{background:#ffffff12;color:#d8e2f5}
+.nav button.active .navicon{background:#315ee8;color:#fff}
+.sidebottom{color:#8190aa;border-top:1px solid #ffffff1a;padding-top:17px}
+.main{background:transparent}
+.topbar{height:68px;background:#ffffffed;border-bottom:1px solid #e6ebf2;padding:0 clamp(18px,3vw,42px);box-shadow:0 3px 16px rgba(23,42,75,.025)}
+.crumb{font-size:12px;letter-spacing:.01em}
+.crumb strong{font-weight:800}
+.topright{background:#f0f8f4;border-color:#dcefe4;color:#287b56;font-weight:650}
+.content{max-width:1320px;padding:38px clamp(18px,3vw,42px) 64px}
+.welcome{background:linear-gradient(115deg,#1c3155 0%,#284b89 58%,#3768c7 100%);border-radius:22px;padding:34px 36px;margin-bottom:30px;position:relative;overflow:hidden;box-shadow:0 18px 40px rgba(35,69,132,.16)}
+.welcome:after{content:"";position:absolute;width:310px;height:310px;border:1px solid #ffffff20;border-radius:50%;right:-80px;top:-165px;box-shadow:0 0 0 35px #ffffff09,0 0 0 70px #ffffff06}
+.welcome .eyebrow{color:#b9ccff}
+.welcome h1{color:#fff;font-size:clamp(26px,3vw,36px);letter-spacing:-1.1px;position:relative;z-index:1}
+.welcome p{color:#d5e0f4;max-width:720px;position:relative;z-index:1}
+.sectiontitle{font-size:15px;margin-bottom:16px;color:#263650}
+.toolgrid{gap:18px}
+.toolcard{border:1px solid #e5eaf2;border-radius:17px;padding:23px;min-height:190px;box-shadow:0 7px 22px rgba(24,44,77,.04)}
+.toolcard:hover{transform:translateY(-3px);border-color:#b8c8fa;box-shadow:0 16px 34px rgba(24,55,115,.09)}
+.toolicon{width:46px;height:46px;border-radius:14px;background:#edf2ff;color:#315ee8}
+.toolcard h3{font-size:16px;color:#1d2d48}
+.toolcard p{font-size:12.5px;line-height:1.7}
+.toolfoot{font-size:12px}
+.panel{border:1px solid #e5eaf2;border-radius:17px;padding:24px;box-shadow:0 8px 24px rgba(24,44,77,.04);background:#fff}
+.panelhead{margin-bottom:19px}
+.panel h2{font-size:15px;color:#243550}
+.step{background:#edf2ff;color:#315ee8;letter-spacing:.04em}
+.upload{background:#f8faff;border:1.5px dashed #bdcbe0;border-radius:14px;min-height:170px}
+.upload:hover,.upload.drag{background:#f0f4ff;border-color:#6485ef}
+.upload strong{color:#263852;font-size:14px}
+.btn{border-radius:10px;padding:11px 16px;font-size:12px;box-shadow:none}
+.primary{background:#315ee8}
+.primary:hover:not(:disabled){background:#244bd0;box-shadow:0 5px 14px #315ee82b}
+.secondary{background:#fff;border-color:#dfe6f0}
+.success{background:#13845b}
+.status{line-height:1.6}
+.stats{gap:13px}
+.stat{background:#f8faff;border:1px solid #e8edf5;border-radius:13px;padding:17px}
+.stat b{font-size:23px}
+.tablewrap{border:1px solid #e3e9f2;border-radius:13px;max-height:570px}
+table{font-size:11.5px}
+th{background:#f1f5fb;color:#435573}
+th,td{padding:11px 12px}
+tbody tr:hover{background:#f1f5ff}
+.toolbar input{border-color:#dfe6f0;border-radius:10px;padding:11px 13px}
+.toolbar input:focus{border-color:#8ca6f5;box-shadow:0 0 0 3px #315ee814}
+.pager button{border-color:#dfe6f0;border-radius:9px}
+.note{background:#f6f9ff;border-color:#e2eaf8;border-radius:12px;color:#52627b}
+.toolheading{align-items:center;margin-bottom:24px}
+.toolheading h1{font-size:27px;letter-spacing:-.8px;color:#1d2d48}
+.toolheading p{font-size:13px}
+.backbtn{display:inline-flex;align-items:center;gap:7px;margin-bottom:21px;padding:8px 11px;border-radius:9px;background:#edf2ff}
+.backbtn:hover{background:#e3ebff}
+.foot{padding:22px}
+#lraView>header{display:none}
+#lraView>main{display:contents}
+@media(max-width:850px){
+  .sidebar{width:76px;padding:20px 10px}
+  .brand{padding:0 6px 26px}
+  .brandmark{width:44px;height:44px}
+  .nav button{padding:11px 8px}
+  .main{margin-left:76px}
+  .content{padding:28px 22px 48px}
+  .welcome{padding:28px 25px}
+}
+@media(max-width:600px){
+  .sidebar{width:62px;padding:17px 7px}
+  .brand{padding:0 2px 22px}
+  .brandmark{width:42px;height:42px}
+  .main{margin-left:62px}
+  .topbar{height:58px;padding:0 13px}
+  .content{padding:20px 12px 34px}
+  .welcome{padding:24px 20px;border-radius:17px;margin-bottom:23px}
+  .welcome h1{font-size:25px}
+  .toolgrid{grid-template-columns:1fr;gap:13px}
+  .toolcard{min-height:160px;padding:19px}
+  .panel{padding:17px;border-radius:14px}
+  .stats{grid-template-columns:1fr}
+  .toolheading h1{font-size:22px}
+}
+
+
+/* ===== Tema minimalis ORANGE + HIJAU ===== */
+:root{
+ --ink:#26352f;
+ --muted:#78877f;
+ --line:#e7ece8;
+ --bg:#f7f9f7;
+ --surface:#ffffff;
+ --blue:#e87924;       /* aksen utama orange */
+ --blue-dark:#c85e12;
+ --blue-soft:#fff3e8;
+ --green:#25845a;
+ --green-soft:#eaf6ef;
+ --red:#c34b4b;
+ --shadow:0 4px 16px rgba(35,62,47,.045);
+}
+body{background:#f7f9f7;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.sidebar{background:#fff;color:var(--ink);border-right:1px solid #e8ede9;box-shadow:none;padding:23px 15px}
+.brandmark{background:#e87924;color:#fff;box-shadow:none;border-radius:11px}
+.brandname{color:#26352f;letter-spacing:.025em}
+.brandtag{color:#89958e}
+.navlabel{color:#9aa59e}
+.nav button{color:#65736b;border-radius:9px;font-weight:600}
+.nav button:hover{background:#f6f8f6;color:#34453b}
+.nav button.active{background:#fff2e7;color:#c85e12;box-shadow:inset 3px 0 #e87924}
+.navicon{background:#f1f4f1;color:#65736b;border-radius:7px}
+.nav button.active .navicon{background:#ffe5d0;color:#c85e12}
+.sidebottom{color:#9aa59e;border-top:1px solid #edf0ed}
+.topbar{height:62px;background:#ffffff;border-bottom:1px solid #e8ede9;box-shadow:none;backdrop-filter:none}
+.crumb{color:#89958e}
+.crumb strong{color:#34453b}
+.topright{background:#edf7f0;border:1px solid #dceee2;color:#28784f;font-weight:600}
+.content{max-width:1240px;padding-top:30px}
+.welcome{background:#fff;border:1px solid #e8ede9;border-radius:15px;padding:27px 29px;box-shadow:none;margin-bottom:25px}
+.welcome:after{display:none}
+.welcome .eyebrow{color:#d66c1e}
+.welcome h1{color:#26352f;font-size:clamp(24px,2.7vw,31px);letter-spacing:-.7px}
+.welcome p{color:#78877f}
+.eyebrow{color:#d66c1e;letter-spacing:.09em}
+.sectiontitle{color:#34453b;font-size:14px;font-weight:700}
+.toolgrid{gap:13px}
+.toolcard{min-height:160px;padding:19px;border:1px solid #e7ece8;border-radius:13px;box-shadow:none;transition:border-color .15s,background .15s}
+.toolcard:hover{transform:none;border-color:#efbd91;background:#fffdfa;box-shadow:0 4px 13px rgba(35,62,47,.04)}
+.toolicon{width:39px;height:39px;border-radius:10px;background:#fff2e7;color:#d66c1e;font-size:18px}
+.toolcard h3{font-size:14px;color:#34453b}
+.toolcard p{font-size:12px;color:#78877f}
+.toolfoot{color:#c76519;font-size:11px}
+.panel{border:1px solid #e7ece8;border-radius:13px;padding:20px;box-shadow:none}
+.panel h2{font-size:14px;color:#34453b}
+.panelhead{margin-bottom:15px}
+.step{background:#fff2e7;color:#c76519;border-radius:6px}
+.upload{min-height:150px;border:1px dashed #cbd7ce;background:#fbfdfb;border-radius:11px}
+.upload:hover,.upload.drag{border-color:#e87924;background:#fff8f2}
+.upload strong{color:#34453b;font-weight:650}
+.muted,.status{color:#78877f}
+.fileline{color:#25845a}
+.btn{border-radius:8px;padding:10px 14px;font-weight:650;box-shadow:none}
+.primary{background:#e87924;color:#fff}
+.primary:hover:not(:disabled){background:#c85e12;box-shadow:none}
+.secondary{background:#fff;color:#53645a;border-color:#e2e9e3}
+.secondary:hover{background:#f8faf8}
+.success{background:#25845a;color:#fff}
+.success:hover{background:#1d704b}
+.stats{gap:10px}
+.stat{background:#fbfdfb;border:1px solid #e8ede9;border-radius:10px;padding:14px}
+.stat b{font-size:21px;color:#34453b}
+.stat.in b{color:#25845a}
+.stat.out b{color:#c76519}
+.toolbar input{border:1px solid #e2e9e3;border-radius:8px}
+.toolbar input:focus{border-color:#e9a66f;box-shadow:0 0 0 3px #e8792414}
+.tablewrap{border:1px solid #e7ece8;border-radius:10px;max-height:520px}
+th{background:#f4f7f4;color:#596b60}
+th,td{border-bottom-color:#edf1ed}
+tbody tr:nth-child(even){background:#fbfcfb}
+tbody tr:hover{background:#fff7ef}
+.pager button{border:1px solid #e2e9e3;border-radius:7px;color:#53645a}
+.note{background:#f3f8f4;border:1px solid #e2eee5;color:#5e7065;border-radius:9px}
+.toolheading h1{color:#34453b;font-size:24px}
+.backbtn{color:#c76519;background:#fff2e7;border-radius:7px}
+.backbtn:hover{background:#ffe9d7}
+.foot{color:#9aa59e}
+#lraView .panel{box-shadow:none;border-color:#e7ece8;border-radius:13px}
+#lraView .upload{border-color:#cbd7ce;background:#fbfdfb}
+#lraView .upload:hover,#lraView .upload.drag{border-color:#e87924;background:#fff8f2}
+#lraView .primary{background:#e87924}
+#lraView .primary:hover:not(:disabled){background:#c85e12}
+#lraView .success{background:#25845a}
+#lraView .step{background:#fff2e7;color:#c76519}
+@media(max-width:850px){
+ .sidebar{background:#fff}
+ .main{margin-left:76px}
+}
+@media(max-width:600px){
+ .welcome{padding:22px 19px;border-radius:12px}
+ .welcome h1{font-size:24px}
+ .toolcard{min-height:145px}
+ .panel{padding:16px}
+}
+
+
+/* ===== PREMIUM NAVY & GOLD THEME — CSS ONLY ===== */
+:root{
+ --ink:#14233d;--muted:#74829a;--line:#dfe6f1;--bg:#f3f6fb;--surface:#fff;
+ --blue:#173b70;--blue-dark:#10294f;--blue-soft:#edf3fc;
+ --green:#b88716;--green-soft:#fff7df;--red:#c34b4b;
+ --shadow:0 12px 34px rgba(15,35,68,.075);
+}
+body{background:linear-gradient(135deg,#f5f7fc 0%,#eef2f9 52%,#f8f9fc 100%);color:var(--ink)}
+.sidebar{
+ background:linear-gradient(165deg,#0b1930 0%,#112b50 58%,#173d69 100%);
+ color:#f8faff;border:0;box-shadow:10px 0 34px rgba(8,24,48,.13)
+}
+.brandmark{background:linear-gradient(135deg,#ffe28a,#d9a82e 55%,#a97812);color:#10213d;box-shadow:0 5px 18px #d9a82e40;border-radius:12px}
+.brandname{color:#fff;letter-spacing:.06em}.brandtag{color:#aebed6}
+.navlabel{color:#91a6c5}
+.nav button{color:#d2dced;border-radius:10px}
+.nav button:hover{background:#ffffff12;color:#fff}
+.nav button.active{background:linear-gradient(100deg,#f6d77724,#f6d7770a);color:#ffdf83;box-shadow:inset 3px 0 #e9bd4e}
+.navicon{background:#ffffff12;color:#cbd8ec;border-radius:8px}
+.nav button.active .navicon{background:#f2cf6a20;color:#ffdc79}
+.sidebottom{color:#9aacc7;border-top:1px solid #ffffff20}
+.topbar{background:#ffffffdf;border-bottom:1px solid #dfe6f1;box-shadow:0 4px 20px #10294f08;backdrop-filter:blur(14px)}
+.crumb{color:#8290a6}.crumb strong{color:#17365f}
+.topright{background:#fff8e6;border:1px solid #f1dfaa;color:#8d6815;font-weight:650}
+.content{max-width:1280px}
+.welcome{
+ position:relative;overflow:hidden;
+ background:linear-gradient(112deg,#10294f 0%,#173d70 62%,#245487 100%);
+ border:1px solid #294f7d;border-radius:19px;padding:32px 34px;
+ box-shadow:0 18px 42px rgba(13,39,76,.17)
+}
+.welcome:before{content:"";position:absolute;width:310px;height:310px;border:1px solid #f5d77b35;border-radius:50%;right:-70px;top:-185px;box-shadow:0 0 0 25px #f5d77b0b,0 0 0 55px #f5d77b08}
+.welcome:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:110px;bottom:-145px;background:radial-gradient(circle,#f3ce6c2b,transparent 70%)}
+.welcome .eyebrow,.eyebrow{color:#d6a936;letter-spacing:.13em;font-weight:750}
+.welcome h1{color:#fff;font-size:clamp(25px,3vw,34px);letter-spacing:-.8px}
+.welcome p{color:#d4deed;max-width:760px}
+.sectiontitle{color:#1b3559;font-size:14px;font-weight:750}
+.toolgrid{gap:15px}
+.toolcard{
+ position:relative;overflow:hidden;min-height:168px;padding:21px;
+ background:linear-gradient(145deg,#fff 0%,#fbfcff 100%);
+ border:1px solid #dfe6f1;border-radius:15px;box-shadow:0 7px 22px #10294f08;
+ transition:transform .2s,border-color .2s,box-shadow .2s
+}
+.toolcard:before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,#173b70,#dcb64d 70%,transparent)}
+.toolcard:hover{transform:translateY(-3px);border-color:#d8bd72;box-shadow:0 14px 30px #10294f14;background:#fff}
+.toolicon{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#eaf1fc,#fff6dc);color:#173b70;font-size:19px;border:1px solid #e3e8f0}
+.toolcard h3{font-size:14px;color:#1b3559}.toolcard p{font-size:12px;color:#74829a}
+.toolfoot{color:#9a741c;font-size:11px;font-weight:750}
+.panel{border:1px solid #dfe6f1;border-radius:15px;padding:21px;box-shadow:0 7px 22px #10294f08;background:#fff}
+.panel h2{font-size:14px;color:#1b3559}.panelhead{margin-bottom:15px}
+.step{background:linear-gradient(110deg,#fff4d4,#fff9eb);color:#8c6816;border:1px solid #f0dfad;border-radius:7px}
+.upload{min-height:150px;border:1px dashed #b9c8dc;background:linear-gradient(145deg,#fbfcff,#f7f9fd);border-radius:12px}
+.upload:hover,.upload.drag{border-color:#c9a33e;background:#fffaf0}
+.upload strong{color:#1b3559;font-weight:700}
+.muted,.status{color:#74829a}.fileline{color:#987117}
+.btn{border-radius:9px;padding:10px 15px;font-weight:700;box-shadow:none}
+.primary{background:linear-gradient(110deg,#173b70,#245487 70%,#b18a2e);color:#fff;border:0}
+.primary:hover:not(:disabled){background:linear-gradient(110deg,#10294f,#1d4778 70%,#9b741e);box-shadow:0 6px 16px #173b7030}
+.secondary{background:#fff;color:#304969;border-color:#dce4ef}
+.secondary:hover{background:#f5f8fc}
+.success{background:linear-gradient(110deg,#173b70,#245487);color:#fff}
+.success:hover{background:#10294f}
+.stats{gap:11px}.stat{background:linear-gradient(145deg,#fff,#f8faff);border:1px solid #e0e7f1;border-radius:11px;padding:14px}
+.stat b{font-size:21px;color:#1b3559}.stat.in b{color:#987117}.stat.out b{color:#b1841f}
+.toolbar input{border:1px solid #dce4ef;border-radius:8px}
+.toolbar input:focus{border-color:#c7a345;box-shadow:0 0 0 3px #d8b64b22}
+.tablewrap{border:1px solid #dfe6f1;border-radius:11px;max-height:520px}
+th{background:#edf2f9;color:#304969}th,td{border-bottom-color:#e9eef5}
+tbody tr:nth-child(even){background:#f9fbfe}tbody tr:hover{background:#fff9e9}
+.pager button{border:1px solid #dce4ef;border-radius:7px;color:#304969}
+.note{background:linear-gradient(110deg,#f2f6fc,#fff9e9);border:1px solid #e6e4d6;color:#536780;border-radius:10px}
+.toolheading h1{color:#1b3559;font-size:25px}.backbtn{color:#8d6815;background:#fff6df;border:1px solid #efdfb3;border-radius:8px}
+.backbtn:hover{background:#ffefc4}.foot{color:#8290a6}
+#lraView .panel{box-shadow:0 7px 22px #10294f08;border-color:#dfe6f1;border-radius:15px}
+#lraView .upload{border-color:#b9c8dc;background:linear-gradient(145deg,#fbfcff,#f7f9fd)}
+#lraView .upload:hover,#lraView .upload.drag{border-color:#c9a33e;background:#fffaf0}
+#lraView .primary{background:linear-gradient(110deg,#173b70,#245487 70%,#b18a2e)}
+#lraView .primary:hover:not(:disabled){background:linear-gradient(110deg,#10294f,#1d4778 70%,#9b741e)}
+#lraView .success{background:linear-gradient(110deg,#173b70,#245487)}
+#lraView .step{background:linear-gradient(110deg,#fff4d4,#fff9eb);color:#8c6816}
+@media(max-width:850px){.sidebar{background:linear-gradient(165deg,#0b1930,#173d69)}}
+@media(max-width:600px){.welcome{padding:24px 20px;border-radius:15px}.welcome h1{font-size:25px}.toolcard{min-height:150px}.panel{padding:16px}}
+
 </style>
 </head>
 <body>
