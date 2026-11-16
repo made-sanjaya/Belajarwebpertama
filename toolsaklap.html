@@ -70,7 +70,7 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
       <div class="toolheading"><div><div class="eyebrow">TOOLS AKLAP / KONVERSI EXCEL</div><h1>Konverter Format BIX</h1><p>Ubah file BIX menjadi format gabungan dengan empat kolom. Periksa ringkasan dan preview sebelum mengunduh hasilnya.</p></div><span class="step">BIX</span></div>
       <section class="panel">
         <div class="panelhead"><h2>1. Upload file BIX</h2><span class="step">01 · UPLOAD</span></div>
-        <div class="upload" id="bixDrop"><div style="font-size:27px">↑</div><strong>Tarik dan letakkan file Excel di sini</strong><span class="muted" style="margin:7px 0 14px">atau pilih file BIX dari perangkat Anda · Format .xlsx, .xls</span><button class="btn secondary" id="bixChoose" type="button">Pilih File</button><input type="file" id="bixFile" accept=".xlsx,.xls,.xlsm"></div>
+        <div class="upload" id="bixDrop"><div style="font-size:27px">↑</div><strong>Tarik dan letakkan satu atau beberapa file Excel di sini</strong><span class="muted" style="margin:7px 0 14px">atau pilih beberapa file BIX sekaligus · Format .xlsx, .xls, .xlsm</span><button class="btn secondary" id="bixChoose" type="button">Pilih File</button><input type="file" id="bixFile" accept=".xlsx,.xls,.xlsm" multiple></div>
         <div class="fileline" id="bixFileName"></div>
         <div class="actions"><button class="btn primary" id="bixConvert" disabled>Proses Konversi</button><button class="btn secondary" id="bixRemove">Reset</button><span class="status" id="bixStatus">Silakan upload file BIX terlebih dahulu.</span></div>
         <p class="muted" style="line-height:1.6;margin-top:13px">Sistem mencari lembar kerja yang memuat kolom URAIAN, PENERIMAAN, dan PENGELUARAN. Baris “JUMLAH MUTASI TGL” beserta seluruh baris di bawahnya tidak dimasukkan ke hasil.</p>
@@ -141,21 +141,161 @@ $('lraDownload').onclick=()=>{if(!lraOutput.length){alert('Tidak ada data SRO un
 $('lraReset').onclick=()=>{lraSource=[];lraOutput=[];lraFiltered=[];lraFile.value='';$('lraFileName').textContent='';$('lraStatus').textContent='Belum ada file yang dipilih.';$('lraProcess').disabled=true;$('lraResult').classList.add('hidden');$('lraPreview').classList.add('hidden');$('lraSearch').value='';};
 
 /* KONVERTER BIX */
-let bixFileObj=null,bixRows=[],bixDate='';
+let bixFileObjs=[],bixRows=[],bixDate='';
 const bixFmt=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
-function bixMoney(n){return 'Rp'+bixFmt.format(n||0)}function bixStatus(msg,type=''){$('bixStatus').textContent=msg;$('bixStatus').className='status '+type}
-function chooseBix(file){if(!file)return;if(!/\.(xlsx|xls|xlsm)$/i.test(file.name)){bixStatus('Format file tidak didukung. Pilih file Excel (.xlsx atau .xls).','error');return}bixFileObj=file;$('bixFileName').textContent='✓ '+file.name;$('bixConvert').disabled=false;$('bixResult').classList.add('hidden');bixStatus('File siap diproses.','ok')}
-$('bixChoose').onclick=()=>$('bixFile').click();$('bixDrop').onclick=e=>{if(e.target.closest('button'))return;$('bixFile').click()};$('bixFile').onchange=e=>chooseBix(e.target.files[0]);$('bixRemove').onclick=()=>{bixFileObj=null;$('bixFile').value='';$('bixFileName').textContent='';$('bixConvert').disabled=true;$('bixResult').classList.add('hidden');bixStatus('Silakan upload file BIX terlebih dahulu.')};
-['dragenter','dragover'].forEach(ev=>$('bixDrop').addEventListener(ev,e=>{e.preventDefault();$('bixDrop').classList.add('drag')}));['dragleave','drop'].forEach(ev=>$('bixDrop').addEventListener(ev,e=>{e.preventDefault();$('bixDrop').classList.remove('drag')}));$('bixDrop').addEventListener('drop',e=>chooseBix(e.dataTransfer.files[0]));
+const bixMonths=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function bixMoney(n){return 'Rp'+bixFmt.format(n||0)}
+function bixStatus(msg,type=''){$('bixStatus').textContent=msg;$('bixStatus').className='status '+type}
+function bixNormDatePart(s){return String(s||'').trim().toLowerCase().replace(/\./g,'')}
+function parseBixDate(value){
+  if(value===null||value===undefined||value==='')return null;
+  if(value instanceof Date && !isNaN(value))return new Date(value.getFullYear(),value.getMonth(),value.getDate());
+  if(typeof value==='number' && Number.isFinite(value)){
+    const p=XLSX.SSF.parse_date_code(value);
+    if(p&&p.y&&p.m&&p.d)return new Date(p.y,p.m-1,p.d);
+  }
+  let s=String(value).trim();
+  if(!s)return null;
+  s=s.replace(/^TANGGAL\s*/i,'').trim();
+  // Remove optional day-name prefixes and time suffixes.
+  s=s.replace(/^(senin|selasa|rabu|kamis|jumat|jum'at|sabtu|minggu)[,\s]+/i,'').replace(/\s+\d{1,2}:\d{2}(:\d{2})?.*$/,'').trim();
+  let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if(m){let y=Number(m[3]);if(y<100)y+=y<50?2000:1900;const d=new Date(y,Number(m[2])-1,Number(m[1]));return d.getFullYear()===y&&d.getMonth()===Number(m[2])-1&&d.getDate()===Number(m[1])?d:null;}
+  m=s.match(/^(\d{1,2})[\/\s-]([A-Za-zÀ-ÿ]+)[\/\s-](\d{2,4})$/);
+  if(m){
+    const months={jan:0,januari:0,feb:1,februari:1,mar:2,maret:2,apr:3,april:3,may:4,mei:4,jun:5,juni:5,jul:6,juli:6,agu:7,agt:7,agustus:7,aug:7,sep:8,september:8,okt:9,oktober:9,oct:9,nov:10,november:10,des:11,desember:11,dec:11};
+    const key=bixNormDatePart(m[2]).slice(0,3);
+    let month=months[key];
+    if(month===undefined)month=months[bixNormDatePart(m[2])];
+    if(month!==undefined){let y=Number(m[3]);if(y<100)y+=y<50?2000:1900;const d=new Date(y,month,Number(m[1]));return d.getFullYear()===y&&d.getMonth()===month&&d.getDate()===Number(m[1])?d:null;}
+  }
+  const parsed=new Date(s);
+  return isNaN(parsed)?null:new Date(parsed.getFullYear(),parsed.getMonth(),parsed.getDate());
+}
+function formatBixDate(d){return d?String(d.getDate()).padStart(2,'0')+'/'+bixMonths[d.getMonth()]+'/'+d.getFullYear():''}
+function chooseBix(files){
+  const valid=Array.from(files||[]).filter(f=>/\.(xlsx|xls|xlsm)$/i.test(f.name));
+  if(!valid.length){bixStatus('Pilih file Excel dengan format .xlsx, .xls, atau .xlsm.','error');return}
+  bixFileObjs=valid;
+  $('bixFileName').textContent='✓ '+valid.length+' file dipilih: '+valid.map(f=>f.name).join(', ');
+  $('bixConvert').disabled=false;
+  $('bixResult').classList.add('hidden');
+  bixStatus(valid.length===1?'1 file siap diproses.':' '+valid.length+' file siap diproses dan akan digabung berdasarkan tanggal.','ok');
+}
+$('bixChoose').onclick=()=>$('bixFile').click();
+$('bixDrop').onclick=e=>{if(e.target.closest('button'))return;$('bixFile').click()};
+$('bixFile').onchange=e=>chooseBix(e.target.files);
+$('bixRemove').onclick=()=>{bixFileObjs=[];$('bixFile').value='';$('bixFileName').textContent='';$('bixConvert').disabled=true;$('bixResult').classList.add('hidden');bixRows=[];bixDate='';bixStatus('Silakan upload file BIX terlebih dahulu.')};
+['dragenter','dragover'].forEach(ev=>$('bixDrop').addEventListener(ev,e=>{e.preventDefault();$('bixDrop').classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>$('bixDrop').addEventListener(ev,e=>{e.preventDefault();$('bixDrop').classList.remove('drag')}));
+$('bixDrop').addEventListener('drop',e=>{e.preventDefault();chooseBix(e.dataTransfer.files)});
 function normBix(v){return String(v??'').trim().toUpperCase().replace(/\s+/g,' ')}
 function amountBix(v){if(v===null||v===undefined||v==='')return null;if(typeof v==='number')return Number.isFinite(v)?v:null;let s=String(v).trim();if(!s)return null;let neg=/^\(.*\)$/.test(s);s=s.replace(/[()]/g,'').replace(/Rp/ig,'').replace(/\s/g,'');if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else if(s.includes(','))s=s.replace(',','.');else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');const n=Number(s);return Number.isFinite(n)?(neg?-Math.abs(n):n):null}
-function bixDateFromRows(rows){for(let r=0;r<rows.length;r++)for(let c=0;c<(rows[r]||[]).length;c++){const s=String(rows[r][c]??''),m=s.match(/JUMLAH\s+MUTASI\s+TGL\s*:?\s*(.+)/i);if(m)return m[1].trim().replace(/\s+/g,' ')}return ''}
-function findBixSheet(wb){for(const name of wb.SheetNames){const ws=wb.Sheets[name],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});for(let i=0;i<Math.min(rows.length,40);i++){const cells=(rows[i]||[]).map(normBix),has=x=>cells.some(v=>v===x||v.includes(x));if(has('URAIAN')&&has('PENERIMAAN')&&has('PENGELUARAN'))return{name,rows,headerRow:i}}}return null}
-function convertBix(rows,headerRow){let out=[],active=null;const finish=()=>{if(active){const uraian=active.parts.join(' ').replace(/\s+/g,' ').trim();if(uraian||active.in!==null||active.out!==null)out.push({tanggal:bixDate,uraian,penerimaan:active.in,pengeluaran:active.out});active=null}};for(let i=headerRow+1;i<rows.length;i++){const row=rows[i]||[],text=row[1]===null||row[1]===undefined?'':String(row[1]).trim();if(/^JUMLAH\s+MUTASI\s+TGL/i.test(text)){finish();break}const d=amountBix(row[3]),e=amountBix(row[4]),hasAmount=d!==null||e!==null;if(hasAmount){finish();active={parts:[],in:d,out:e};if(text)active.parts.push(text)}else if(active&&text&&!/^JUMLAH MUTASI/i.test(text))active.parts.push(text)}finish();return out}
-$('bixConvert').onclick=async()=>{if(!bixFileObj)return;if(typeof XLSX==='undefined'){bixStatus('Library Excel belum termuat. Periksa koneksi internet lalu muat ulang halaman.','error');return}$('bixConvert').disabled=true;bixStatus('Sedang membaca dan mengonversi file…');try{const data=await bixFileObj.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:true}),found=findBixSheet(wb);if(!found)throw new Error('Tidak ditemukan sheet dengan header URAIAN, PENERIMAAN, dan PENGELUARAN.');bixDate=bixDateFromRows(found.rows);if(!bixDate)throw new Error('Tanggal tidak ditemukan pada kalimat “JUMLAH MUTASI TGL”.');bixRows=convertBix(found.rows,found.headerRow);if(!bixRows.length)throw new Error('Tidak ditemukan transaksi dengan angka pada kolom D atau E.');renderBix();$('bixResult').classList.remove('hidden');bixStatus('Konversi berhasil dari sheet “'+found.name+'”.','ok')}catch(err){bixStatus(err.message||'Terjadi kesalahan saat memproses file.','error');$('bixResult').classList.add('hidden')}finally{$('bixConvert').disabled=false}};
-function renderBix(){const totalIn=bixRows.reduce((s,r)=>s+(r.penerimaan??0),0),totalOut=bixRows.reduce((s,r)=>s+(r.pengeluaran??0),0);$('bixCount').textContent=bixFmt.format(bixRows.length);$('bixTotalIn').textContent=bixMoney(totalIn);$('bixTotalOut').textContent=bixMoney(totalOut);$('bixPreviewInfo').textContent=bixRows.length+' transaksi · Tanggal '+bixDate;$('bixBody').innerHTML=bixRows.slice(0,100).map(r=>`<tr><td>${escapeHtml(r.tanggal)}</td><td>${escapeHtml(r.uraian)}</td><td class="num">${r.penerimaan===null?'—':bixFmt.format(r.penerimaan)}</td><td class="num">${r.pengeluaran===null?'—':bixFmt.format(r.pengeluaran)}</td></tr>`).join('');if(bixRows.length>100)$('bixBody').innerHTML+=`<tr><td colspan="4" class="empty">Preview menampilkan 100 dari ${bixFmt.format(bixRows.length)} transaksi. Seluruh data tetap ada di file hasil.</td></tr>`}
-$('bixDownload').onclick=()=>{const data=[['Tanggal','Uraian','Penerimaan','Pengeluaran'],...bixRows.map(r=>[r.tanggal,r.uraian,r.penerimaan,r.pengeluaran])],ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:24},{wch:75},{wch:20},{wch:20}];if(data.length>1)for(let r=1;r<data.length;r++)for(let c=2;c<=3;c++){const cell=XLSX.utils.encode_cell({r,c});if(ws[cell]&&ws[cell].v!==null&&ws[cell].v!==undefined)ws[cell].z='#,##0.00;[Red](#,##0.00);0.00'}const out=XLSX.utils.book_new();XLSX.utils.book_append_sheet(out,ws,'Gabungan BIX');const safeDate=bixDate.replace(/[\\/:*?"<>|]/g,'-').replace(/\s+/g,' ').trim();XLSX.writeFile(out,'Gabungan BIX Tanggal '+safeDate+'.xlsx')};
-
+function bixDateFromRows(rows,headerRow){
+  // Tanggal berada pada baris tepat di bawah header URAIAN.
+  const header=rows[headerRow]||[];
+  let uraianCol=header.findIndex(v=>normBix(v)==='URAIAN');
+  const dateRow=rows[headerRow+1]||[];
+  // Pada file BIX umumnya tanggal berada di kolom URAIAN (kolom B).
+  // Jika sel tanggal berada di kolom lain karena variasi merge cell, periksa seluruh baris yang sama.
+  const candidates=[];
+  if(uraianCol>=0)candidates.push(dateRow[uraianCol]);
+  dateRow.forEach((v,i)=>{if(i!==uraianCol)candidates.push(v)});
+  for(const value of candidates){
+    if(value===null||value===undefined||String(value).trim()==='')continue;
+    const text=String(value).trim().replace(/^TANGGAL\s*/i,'').replace(/\s+/g,' ');
+    if(parseBixDate(text))return text;
+  }
+  return '';
+}
+function findBixSheet(wb){
+  for(const name of wb.SheetNames){
+    const ws=wb.Sheets[name],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+    for(let i=0;i<Math.min(rows.length,50);i++){
+      const cells=(rows[i]||[]).map(normBix),has=x=>cells.some(v=>v===x||v.includes(x));
+      if(has('TANGGAL')&&has('URAIAN')&&has('PENERIMAAN')&&has('PENGELUARAN'))return{type:'formatted',name,rows,headerRow:i};
+      if(has('URAIAN')&&has('PENERIMAAN')&&has('PENGELUARAN'))return{type:'source',name,rows,headerRow:i};
+    }
+  }
+  return null;
+}
+function convertBix(rows,headerRow,dateValue){
+  let out=[],active=null;
+  const finish=()=>{if(active){const uraian=active.parts.join(' ').replace(/\s+/g,' ').trim();if(uraian||active.in!==null||active.out!==null)out.push({tanggal:dateValue,uraian,penerimaan:active.in,pengeluaran:active.out,_date:parseBixDate(dateValue)});active=null}};
+  for(let i=headerRow+1;i<rows.length;i++){
+    const row=rows[i]||[],text=row[1]===null||row[1]===undefined?'':String(row[1]).trim();
+    if(/^JUMLAH\s+MUTASI\s+TGL/i.test(text)){finish();break}
+    const d=amountBix(row[3]),e=amountBix(row[4]),hasAmount=d!==null||e!==null;
+    if(hasAmount){finish();active={parts:[],in:d,out:e};if(text)active.parts.push(text)}
+    else if(active&&text&&!/^JUMLAH MUTASI/i.test(text))active.parts.push(text)
+  }
+  finish();return out;
+}
+function readFormattedBix(found){
+  const header=(found.rows[found.headerRow]||[]).map(normBix);
+  const idx={date:header.findIndex(x=>x==='TANGGAL'),desc:header.findIndex(x=>x==='URAIAN'),inc:header.findIndex(x=>x==='PENERIMAAN'),out:header.findIndex(x=>x==='PENGELUARAN')};
+  const out=[];
+  for(let i=found.headerRow+1;i<found.rows.length;i++){
+    const row=found.rows[i]||[];
+    if(row.every(v=>v===null||v===undefined||String(v).trim()===''))continue;
+    const date=parseBixDate(row[idx.date]);
+    if(!date)continue;
+    const uraian=String(row[idx.desc]??'').trim();
+    const penerimaan=amountBix(row[idx.inc]),pengeluaran=amountBix(row[idx.out]);
+    if(uraian||penerimaan!==null||pengeluaran!==null)out.push({tanggal:formatBixDate(date),uraian,penerimaan,pengeluaran,_date:date});
+  }
+  return out;
+}
+async function processBixFile(file){
+  const data=await file.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:true});
+  const found=findBixSheet(wb);
+  if(!found)throw new Error('File "'+file.name+'" tidak memiliki format BIX sumber atau format hasil (Tanggal, Uraian, Penerimaan, Pengeluaran).');
+  if(found.type==='formatted'){
+    const rows=readFormattedBix(found);
+    if(!rows.length)throw new Error('File "'+file.name+'" terdeteksi sudah berformat hasil, tetapi tidak memiliki transaksi bertanggal yang valid.');
+    return {rows,already:true,name:file.name};
+  }
+  const dateText=bixDateFromRows(found.rows,found.headerRow),date=parseBixDate(dateText);
+  if(!date)throw new Error('Tanggal pada file "'+file.name+'" tidak ditemukan atau tidak dapat dibaca dari “JUMLAH MUTASI TGL”.');
+  const rows=convertBix(found.rows,found.headerRow,formatBixDate(date));
+  if(!rows.length)throw new Error('Tidak ditemukan transaksi dengan angka pada kolom D atau E di file "'+file.name+'".');
+  return {rows,already:false,name:file.name};
+}
+$('bixConvert').onclick=async()=>{
+  if(!bixFileObjs.length)return;
+  if(typeof XLSX==='undefined'){bixStatus('Library Excel belum termuat. Periksa koneksi internet lalu muat ulang halaman.','error');return}
+  $('bixConvert').disabled=true;bixStatus('Sedang membaca, memeriksa format, dan menggabungkan file…');
+  try{
+    const processed=[];
+    for(const file of bixFileObjs)processed.push(await processBixFile(file));
+    bixRows=processed.flatMap(x=>x.rows);
+    bixRows.sort((a,b)=>a._date-b._date);
+    if(!bixRows.length)throw new Error('Tidak ditemukan transaksi pada file yang dipilih.');
+    bixDate=bixRows.length?formatBixDate(bixRows[0]._date)+' s.d. '+formatBixDate(bixRows[bixRows.length-1]._date):'';
+    renderBix();$('bixResult').classList.remove('hidden');
+    const converted=processed.filter(x=>!x.already).length,ready=processed.length-converted;
+    bixStatus('Berhasil memproses '+processed.length+' file: '+converted+' dikonversi, '+ready+' sudah sesuai format. Seluruh transaksi digabung dan diurutkan berdasarkan tanggal.','ok');
+  }catch(err){bixStatus(err.message||'Terjadi kesalahan saat memproses file.','error');$('bixResult').classList.add('hidden')}
+  finally{$('bixConvert').disabled=false}
+};
+function renderBix(){
+  const totalIn=bixRows.reduce((s,r)=>s+(r.penerimaan??0),0),totalOut=bixRows.reduce((s,r)=>s+(r.pengeluaran??0),0);
+  $('bixCount').textContent=bixFmt.format(bixRows.length);$('bixTotalIn').textContent=bixMoney(totalIn);$('bixTotalOut').textContent=bixMoney(totalOut);
+  $('bixPreviewInfo').textContent=bixRows.length+' transaksi · Rentang tanggal '+bixDate;
+  $('bixBody').innerHTML=bixRows.slice(0,100).map(r=>`<tr><td>${escapeHtml(r.tanggal)}</td><td>${escapeHtml(r.uraian)}</td><td class="num">${r.penerimaan===null?'—':bixFmt.format(r.penerimaan)}</td><td class="num">${r.pengeluaran===null?'—':bixFmt.format(r.pengeluaran)}</td></tr>`).join('');
+  if(bixRows.length>100)$('bixBody').innerHTML+=`<tr><td colspan="4" class="empty">Preview menampilkan 100 dari ${bixFmt.format(bixRows.length)} transaksi. Seluruh data tetap ada di file hasil.</td></tr>`
+}
+$('bixDownload').onclick=()=>{
+  // Simpan tanggal sebagai teks tampilan dd/mmm/yyyy agar SheetJS tidak
+  // menafsirkan angka serial Excel sebagai timestamp milidetik (tahun 1970).
+  const data=[['Tanggal','Uraian','Penerimaan','Pengeluaran'],...bixRows.map(r=>[formatBixDate(r._date)||r.tanggal,r.uraian,r.penerimaan,r.pengeluaran])];
+  const ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:16},{wch:75},{wch:20},{wch:20}];
+  if(data.length>1)for(let r=1;r<data.length;r++){
+    for(let c=2;c<=3;c++){const cell=XLSX.utils.encode_cell({r,c});if(ws[cell]&&ws[cell].v!==null&&ws[cell].v!==undefined)ws[cell].z='#,##0.00;[Red](#,##0.00);0.00'}
+  }
+  const out=XLSX.utils.book_new();XLSX.utils.book_append_sheet(out,ws,'Gabungan BIX');
+  XLSX.writeFile(out,'Gabungan BIX '+bixDate.replace(/[\\/:*?"<>|]/g,'-').replace(/\s+/g,' ').trim()+'.xlsx')
+};
 /* KONVERTER ASET - logic adapted from the supplied Konverter Penyusutan Aset Tetap */
 const asetHeaders=['KELOMPOK','JENIS','Kode SRO','SRO','Nilai Perolehan','Akumulasi Penyusutan Awal','Penyusutan Smt I','Penyusutan Smt II','Akumulasi Penyusutan Akhir','Nilai Buku'];
 let asetOutput=[],asetSourceName='';
@@ -236,4 +376,4 @@ $('asetReset').addEventListener('click',()=>{
 
 </script>
 </body>
-  </html>
+</html>
