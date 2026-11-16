@@ -21,6 +21,42 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
 .hidden{display:none!important}.backbtn{border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:750;cursor:pointer;padding:0;margin-bottom:19px}.toolheading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:22px}.toolheading h1{font-size:24px;letter-spacing:-.6px;margin:0 0 6px}.toolheading p{font-size:12px;color:var(--muted);margin:0;line-height:1.6}.foot{text-align:center;color:#9aa5b5;font-size:10px;padding:14px}
 @media(max-width:850px){.sidebar{width:72px;padding:20px 10px}.brand{padding:0 5px 25px}.brandname,.brandtag,.navlabel,.navtext,.sidebottom{display:none}.brandmark{width:42px}.nav button{justify-content:center;padding:10px}.main{margin-left:72px}.topbar{padding:0 22px}.content{padding:28px 22px 45px}}
 @media(max-width:600px){.toolgrid{grid-template-columns:1fr}.content{padding:23px 14px 35px}.topbar{height:60px;padding:0 15px}.topright{display:none}.panel{padding:17px}.stats{grid-template-columns:1fr}.toolheading h1{font-size:21px}.upload{min-height:145px}}
+
+/* Gaya baru khusus Konverter LRA Per Program */
+#lraView .panel{background:#fff;border:1px solid #e6ebf2;border-radius:16px;padding:24px;margin-bottom:18px;box-shadow:0 12px 35px rgba(21,39,70,.055)}
+#lraView .panel h2{font-size:16px;font-weight:700;margin:0 0 18px;color:#202d43}
+#lraView .upload{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:176px;border:1.5px dashed #c7d2e2;background:#fafcff;border-radius:13px;padding:26px;text-align:center;cursor:pointer}
+#lraView .upload:hover,#lraView .upload.drag{border-color:#315ee8;background:#eef3ff}
+#lraView .upload strong{display:block;margin:10px 0 5px;font-size:14px;font-weight:650;color:#26364f}
+#lraView .upload input{display:none}
+#lraView .muted{color:#718096;font-size:12px}
+#lraView .fileline{margin-top:13px;font-size:13px;color:#168653;font-weight:650;overflow-wrap:anywhere}
+#lraView .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+#lraView .btn{border:1px solid transparent;border-radius:9px;padding:11px 16px;font-weight:650;cursor:pointer;font-size:13px}
+#lraView .primary{background:#315ee8;color:#fff}
+#lraView .primary:hover:not(:disabled){background:#244bd0}
+#lraView .primary:disabled{opacity:.42;cursor:not-allowed}
+#lraView .secondary{background:#fff;color:#40516b;border-color:#e6ebf2}
+#lraView .success{background:#168653;color:#fff}
+#lraView .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#lraView .stat{background:#fbfcfe;border:1px solid #e6ebf2;padding:16px 17px;border-radius:12px}
+#lraView .stat span{display:block;color:#718096;font-size:12px}
+#lraView .stat b{display:block;font-size:24px;margin-top:7px;color:#1c2a40;font-weight:750}
+#lraView .toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+#lraView .toolbar input{padding:10px 13px;border:1px solid #e6ebf2;border-radius:9px;min-width:min(280px,100%);font:inherit;font-size:13px;background:#fff}
+#lraView .tablewrap{overflow:auto;border:1px solid #e6ebf2;border-radius:11px;max-height:560px}
+#lraView table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}
+#lraView th,#lraView td{padding:11px 12px;border-bottom:1px solid #edf0f5;text-align:left;white-space:nowrap}
+#lraView th{position:sticky;top:0;background:#f5f7fb;color:#465672;z-index:1;font-size:11px;font-weight:700}
+#lraView tbody tr:nth-child(even){background:#fbfcfe}
+#lraView td{color:#334155}
+#lraView td.num{text-align:right;font-variant-numeric:tabular-nums}
+#lraView .pager{display:flex;align-items:center;gap:9px;margin-top:14px;justify-content:flex-end}
+#lraView .pager button{border:1px solid #e6ebf2;background:white;color:#40516b;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:12px}
+#lraView .note{background:#f8faff;border:1px solid #e1e9fb;color:#53627a;padding:14px 16px;border-radius:11px;font-size:12px;line-height:1.7}
+#lraView .status{font-size:12px;color:#718096;margin-top:12px}
+@media(max-width:700px){#lraView .panel{padding:18px;border-radius:13px}#lraView .stats{grid-template-columns:1fr}#lraView .upload{min-height:155px;padding:20px}#lraView .toolbar{align-items:stretch}#lraView .toolbar input{width:100%;min-width:0}#lraView .pager{justify-content:space-between;flex-wrap:wrap}}
+
 </style>
 </head>
 <body>
@@ -53,16 +89,38 @@ button,input{font:inherit}.app{min-height:100vh}.sidebar{position:fixed;inset:0 
     <section id="lraView" class="hidden">
       <button class="backbtn" onclick="showHome()">← Kembali ke menu tools</button>
       <div class="toolheading"><div><div class="eyebrow">TOOLS AKLAP / KONVERSI EXCEL</div><h1>Konverter LRA Per Program</h1><p>Konversi data LRA ke format final dengan lebih cepat dan praktis.</p></div><span class="step">LRA</span></div>
-      <section class="panel">
-        <div class="panelhead"><h2>1. Upload Excel LRA (Excel A)</h2><span class="step">01 · UPLOAD</span></div>
-        <label class="upload" id="lraDrop" for="lraFile"><div style="font-size:27px">📄</div><strong>Pilih file Excel atau tarik file ke sini</strong><span class="muted">Format .xlsx, .xls — pemrosesan dilakukan di browser Anda</span><input id="lraFile" type="file" accept=".xlsx,.xls"></label>
-        <div class="fileline" id="lraFileName"></div>
-        <div class="actions"><button class="btn primary" id="lraProcess" disabled>Proses Konversi</button><button class="btn secondary" id="lraReset">Reset</button></div>
-        <div class="status" id="lraStatus">Belum ada file yang dipilih.</div>
-      </section>
-      <section class="panel hidden" id="lraResult"><h2 style="margin-bottom:16px">2. Hasil Konversi</h2><div class="stats"><div class="stat"><span>Jumlah baris hasil</span><b id="lraRowCount">0</b></div><div class="stat"><span>Jumlah kolom</span><b>22</b></div><div class="stat"><span>Baris SRO ditemukan</span><b id="lraSroCount">0</b></div></div><div class="actions"><button class="btn success" id="lraDownload">↓ Download Excel Hasil</button></div></section>
-      <section class="panel hidden" id="lraPreview"><div class="toolbar"><h2>3. Preview Data</h2><input id="lraSearch" type="search" placeholder="Cari kode atau uraian..."></div><div class="tablewrap"><table><thead id="lraHead"></thead><tbody id="lraBody"></tbody></table></div><div class="pager"><span class="muted" id="lraPageInfo"></span><button id="lraPrev">Sebelumnya</button><button id="lraNext">Berikutnya</button></div></section>
-      <section class="panel"><h2 style="margin-bottom:13px">Ketentuan pemetaan</h2><div class="note">Konverter mengambil baris dengan kode SRO Belanja pada kolom D (panjang 19 karakter) sebagai satu baris keluaran. Kode dan uraian jenjang diambil dari baris terkait/terakhir yang ditemukan di atasnya. Anggaran dijumlahkan dari kolom F, H, J, L; realisasi dijumlahkan dari kolom G, I, K, M. Nilai kode dipertahankan sebagai teks agar format kode tidak berubah.</div></section>
+      <header><div class="wrap"><h1>Konverter LRA Per Program</h1><p>Konversi data LRA ke format final dengan lebih cepat dan praktis.</p></div></header>
+<main>
+<section class="panel">
+<h2>1. Upload Excel LRA (Excel A)</h2>
+<label class="upload" id="lra2Dropzone" for="lra2FileInput">
+  <div style="font-size:28px">📄</div><strong>Pilih file Excel atau tarik file ke sini</strong>
+  <span class="muted">Format .xlsx, .xls — pemrosesan dilakukan di browser Anda</span>
+  <input id="lra2FileInput" type="file" accept=".xlsx,.xls">
+</label>
+<div class="fileline" id="lra2FileName"></div>
+<div class="actions"><button class="btn primary" id="lra2ProcessBtn" disabled>Proses Konversi</button><button class="btn secondary" id="lra2ResetBtn">Reset</button></div>
+<div class="status" id="lra2Status">Belum ada file yang dipilih.</div>
+</section>
+<section class="panel" id="lra2ResultPanel" hidden>
+<h2>2. Hasil Konversi</h2>
+<div class="stats">
+ <div class="stat"><span>Jumlah baris hasil</span><b id="lra2RowCount">0</b></div>
+ <div class="stat"><span>Jumlah kolom</span><b>22</b></div>
+ <div class="stat"><span>Baris SRO ditemukan</span><b id="lra2SroCount">0</b></div>
+</div>
+<div class="actions"><button class="btn success" id="lra2DownloadBtn">⬇ Download Excel Hasil</button></div>
+</section>
+<section class="panel" id="lra2PreviewPanel" hidden>
+<div class="toolbar"><h2 style="margin:0">3. Preview Data</h2><input id="lra2SearchInput" type="search" placeholder="Cari kode atau uraian..."></div>
+<div class="tablewrap"><table><thead id="lra2TableHead"></thead><tbody id="lra2TableBody"></tbody></table></div>
+<div class="pager"><span class="muted" id="lra2PageInfo"></span><button id="lra2PrevBtn">Sebelumnya</button><button id="lra2NextBtn">Berikutnya</button></div>
+</section>
+<section class="panel">
+<h2>Ketentuan pemetaan</h2>
+<div class="note">Konverter mengambil baris dengan kode SRO Belanja pada kolom D (panjang 19 karakter) sebagai satu baris keluaran. Kode dan uraian jenjang diambil dari baris terkait/terakhir yang ditemukan di atasnya. Anggaran dijumlahkan dari kolom F, H, J, L; realisasi dijumlahkan dari kolom G, I, K, M. Angka dalam tanda kurung ( ) diperlakukan sebagai nilai negatif. Nilai kode dipertahankan sebagai teks agar format kode tidak berubah.</div>
+</section>
+</main>
     </section>
 
     <section id="bixView" class="hidden">
@@ -120,25 +178,102 @@ function openTool(which){['homeView','lraView','bixView','asetView'].forEach(id=
 function setNav(id){['navHome','navLra','navBix','navAset'].forEach(x=>$(x).classList.toggle('active',x===id));}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-/* KONVERTER LRA */
-const lraHeaders=["Kode Urusan","Urusan","Kode Uraian Urusan","Uraian Urusan","Kode Organisasi","SKPD","Kode Program","Program","Kode Kegiatan","Kegiatan","Kode Subkegiatan","Subkegiatan","Kode Jenis Belanja","Jenis Belanja","Kode Objek","Objek Belanja","Kode Rincian Objek","Rincian Objek Belanja","Kode SRO Belanja","SRO Belanja","Anggaran","Realisasi"];
-let lraSource=[],lraOutput=[],lraFiltered=[],lraPage=0;const lraPageSize=50;
-const lraDrop=$('lraDrop'),lraFile=$('lraFile');
-lraDrop.addEventListener('dragover',e=>{e.preventDefault();lraDrop.classList.add('drag')});lraDrop.addEventListener('dragleave',()=>lraDrop.classList.remove('drag'));lraDrop.addEventListener('drop',e=>{e.preventDefault();lraDrop.classList.remove('drag');if(e.dataTransfer.files[0])loadLra(e.dataTransfer.files[0])});
-lraFile.addEventListener('change',e=>{if(e.target.files[0])loadLra(e.target.files[0])});
-function loadLra(file){if(!/\.(xlsx|xls)$/i.test(file.name)){alert('Pilih file Excel .xlsx atau .xls');return;}$('lraFileName').textContent='✓ '+file.name;$('lraStatus').textContent='Membaca file...';$('lraProcess').disabled=true;$('lraResult').classList.add('hidden');$('lraPreview').classList.add('hidden');const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:false,raw:false});const ws=wb.Sheets[wb.SheetNames[0]];lraSource=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:false});$('lraStatus').textContent=`File terbaca: ${lraSource.length.toLocaleString('id-ID')} baris. Klik Proses Konversi.`;$('lraProcess').disabled=false}catch(err){$('lraStatus').textContent='Gagal membaca file: '+err.message}};reader.onerror=()=>$('lraStatus').textContent='File tidak dapat dibaca.';reader.readAsArrayBuffer(file);}
-const clean=v=>v===null||v===undefined?'':String(v).trim();
-function parseLraAmount(v){if(v===null||v===undefined||v==='')return 0;if(typeof v==='number')return v;let s=String(v).trim().replace(/\s/g,'');if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');const n=Number(s);return Number.isFinite(n)?n:0;}
-function processLra(){if(!lraSource.length)return;const cur={urusan:'',urusanName:'',uraianKode:'',uraian:'',orgKode:'',skpd:'',programKode:'',program:'',kegiatanKode:'',kegiatan:'',subKode:'',sub:'',jenisKode:'',jenis:'',objekKode:'',objek:'',rincianKode:'',rincian:''};const out=[];
-for(let i=9;i<lraSource.length;i++){const r=lraSource[i]||[];const a=clean(r[0]),b=clean(r[1]),c=clean(r[2]),d=clean(r[3]),e=clean(r[4]);
-if(a&&a.length===1&&!b&&!c&&!d){cur.urusan=a;cur.urusanName=e}if(a&&a.length===4&&!b&&!c&&!d){cur.uraianKode=a;cur.uraian=e}if(b&&b.length===22&&!c&&!d){cur.orgKode=b;cur.skpd=e}if(c&&c.length===7&&!d){cur.programKode=c;cur.program=e}if(c&&c.length===12&&!d){cur.kegiatanKode=c;cur.kegiatan=e}if(c&&c.length===17&&!d){cur.subKode=c;cur.sub=e}if(d&&d.length===6){cur.jenisKode=d;cur.jenis=e}if(d&&d.length===9){cur.objekKode=d;cur.objek=e}if(d&&d.length===13){cur.rincianKode=d;cur.rincian=e}
-if(d&&d.length===19){const anggaran=[r[5],r[7],r[9],r[11]].reduce((s,v)=>s+parseLraAmount(v),0);const realisasi=[r[6],r[8],r[10],r[12]].reduce((s,v)=>s+parseLraAmount(v),0);out.push([cur.urusan,cur.urusanName,cur.uraianKode,cur.uraian,cur.orgKode,cur.skpd,cur.programKode,cur.program,cur.kegiatanKode,cur.kegiatan,cur.subKode,cur.sub,cur.jenisKode,cur.jenis,cur.objekKode,cur.objek,cur.rincianKode,cur.rincian,d,e,anggaran,realisasi]);}}
-lraOutput=out;lraFiltered=out;lraPage=0;$('lraRowCount').textContent=out.length.toLocaleString('id-ID');$('lraSroCount').textContent=out.length.toLocaleString('id-ID');$('lraResult').classList.remove('hidden');$('lraPreview').classList.remove('hidden');$('lraStatus').textContent=`Selesai. ${out.length.toLocaleString('id-ID')} baris SRO berhasil dikonversi.`;renderLra();}
-const fmtLra=n=>new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-function renderLra(){const start=lraPage*lraPageSize,rows=lraFiltered.slice(start,start+lraPageSize);$('lraHead').innerHTML='<tr>'+lraHeaders.map(h=>`<th>${escapeHtml(h)}</th>`).join('')+'</tr>';$('lraBody').innerHTML=rows.map(row=>'<tr>'+row.map((v,i)=>`<td class="${i>=20?'num':''}">${escapeHtml(i>=20?fmtLra(Number(v)||0):clean(v))}</td>`).join('')+'</tr>').join('');const pages=Math.max(1,Math.ceil(lraFiltered.length/lraPageSize));$('lraPageInfo').textContent=`Menampilkan ${lraFiltered.length?start+1:0}–${Math.min(start+lraPageSize,lraFiltered.length)} dari ${lraFiltered.length.toLocaleString('id-ID')} baris`;$('lraPrev').disabled=lraPage===0;$('lraNext').disabled=lraPage>=pages-1;}
-$('lraProcess').onclick=processLra;$('lraPrev').onclick=()=>{if(lraPage>0){lraPage--;renderLra()}};$('lraNext').onclick=()=>{if((lraPage+1)*lraPageSize<lraFiltered.length){lraPage++;renderLra()}};$('lraSearch').oninput=e=>{const q=e.target.value.toLowerCase();lraFiltered=lraOutput.filter(r=>r.some(v=>String(v??'').toLowerCase().includes(q)));lraPage=0;renderLra()};
-$('lraDownload').onclick=()=>{if(!lraOutput.length){alert('Tidak ada data SRO untuk diunduh.');return}const aoa=[lraHeaders,...lraOutput],ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:14},{wch:42},{wch:18},{wch:42},{wch:26},{wch:42},{wch:18},{wch:48},{wch:20},{wch:48},{wch:23},{wch:48},{wch:20},{wch:32},{wch:20},{wch:32},{wch:24},{wch:48},{wch:26},{wch:55},{wch:20},{wch:20}];ws['!autofilter']={ref:`A1:V${aoa.length}`};ws['!freeze']={xSplit:6,ySplit:1};for(let r=1;r<aoa.length;r++)for(let c=20;c<22;c++){const cell=XLSX.utils.encode_cell({r,c});if(ws[cell])ws[cell].z='#,##0.00'}const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'LRA Per Program');XLSX.writeFile(wb,'LRA Per Program Format.xlsx')};
-$('lraReset').onclick=()=>{lraSource=[];lraOutput=[];lraFiltered=[];lraFile.value='';$('lraFileName').textContent='';$('lraStatus').textContent='Belum ada file yang dipilih.';$('lraProcess').disabled=true;$('lraResult').classList.add('hidden');$('lraPreview').classList.add('hidden');$('lraSearch').value='';};
+
+/* KONVERTER LRA PER PROGRAM — diganti sepenuhnya dari file modern v2 */
+(()=>{
+
+const headers=["Kode Urusan","Urusan","Kode Uraian Urusan","Uraian Urusan","Kode Organisasi","SKPD","Kode Program","Program","Kode Kegiatan","Kegiatan","Kode Subkegiatan","Subkegiatan","Kode Jenis Belanja","Jenis Belanja","Kode Objek","Objek Belanja","Kode Rincian Objek","Rincian Objek Belanja","Kode SRO Belanja","SRO Belanja","Anggaran","Realisasi"];
+const $=id=>document.getElementById(id);
+let sourceRows=[], outputRows=[], outputSheet=null, page=0, pageSize=50, filteredRows=[];
+const drop=$("lra2Dropzone"), fileInput=$("lra2FileInput");
+drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("drag")});
+drop.addEventListener("dragleave",()=>drop.classList.remove("drag"));
+drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("drag");if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0])});
+fileInput.addEventListener("change",e=>{if(e.target.files[0])loadFile(e.target.files[0])});
+function loadFile(file){
+ if(!/\.(xlsx|xls)$/i.test(file.name)){alert("Pilih file Excel .xlsx atau .xls");return}
+ $("lra2FileName").textContent="✓ "+file.name;$("lra2Status").textContent="Membaca file...";
+ $("lra2ProcessBtn").disabled=true;$("lra2ResultPanel").hidden=true;$("lra2PreviewPanel").hidden=true;
+ const reader=new FileReader();
+ reader.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:"array",cellDates:false,raw:false});const ws=wb.Sheets[wb.SheetNames[0]];sourceRows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:false});$("lra2Status").textContent=`File terbaca: ${sourceRows.length.toLocaleString("id-ID")} baris. Klik Proses Konversi.`;$("lra2ProcessBtn").disabled=false}catch(err){$("lra2Status").textContent="Gagal membaca file: "+err.message}};
+ reader.onerror=()=>{$("lra2Status").textContent="File tidak dapat dibaca."};reader.readAsArrayBuffer(file);
+}
+function clean(v){return v===null||v===undefined?"":String(v).trim()}
+function codeLen(v){return clean(v).length}
+function parseAmount(v){
+ if(v===null||v===undefined||v==="")return 0;
+ if(typeof v==="number")return v;
+
+ let s=String(v).trim().replace(/\s/g,"");
+ // Angka dalam tanda kurung dianggap negatif, misalnya (1.250.000) atau (1.250.000,50).
+ const isNegative=/^\(.*\)$/.test(s);
+ if(isNegative)s=s.slice(1,-1);
+
+ // Format Indonesia: 1.234.567,89.
+ if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");
+ else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,"");
+
+ const n=Number(s);
+ if(!Number.isFinite(n))return 0;
+ return isNegative ? -Math.abs(n) : n;
+}
+function processData(){
+ if(!sourceRows.length)return;
+ const current={urusan:"",urusanName:"",uraianKode:"",uraian:"",orgKode:"",skpd:"",programKode:"",program:"",kegiatanKode:"",kegiatan:"",subKode:"",sub:"",jenisKode:"",jenis:"",objekKode:"",objek:"",rincianKode:"",rincian:""};
+ const out=[];
+ // Excel A: baris data dimulai dari baris 10 (indeks 9)
+ for(let i=9;i<sourceRows.length;i++){
+  const r=sourceRows[i]||[];
+  const a=clean(r[0]), b=clean(r[1]), c=clean(r[2]), d=clean(r[3]), e=clean(r[4]);
+  if(a && codeLen(a)===1 && !b&&!c&&!d){current.urusan=a;current.urusanName=e}
+  if(a && codeLen(a)===4 && !b&&!c&&!d){current.uraianKode=a;current.uraian=e}
+  if(b && codeLen(b)===22 && !c&&!d){current.orgKode=b;current.skpd=e}
+  if(c && codeLen(c)===7 && !d){current.programKode=c;current.program=e}
+  if(c && codeLen(c)===12 && !d){current.kegiatanKode=c;current.kegiatan=e}
+  if(c && codeLen(c)===17 && !d){current.subKode=c;current.sub=e}
+  if(d && codeLen(d)===6){current.jenisKode=d;current.jenis=e}
+  if(d && codeLen(d)===9){current.objekKode=d;current.objek=e}
+  if(d && codeLen(d)===13){current.rincianKode=d;current.rincian=e}
+  if(d && codeLen(d)===19){
+   const anggaran=[r[5],r[7],r[9],r[11]].reduce((s,v)=>s+parseAmount(v),0);
+   const realisasi=[r[6],r[8],r[10],r[12]].reduce((s,v)=>s+parseAmount(v),0);
+   out.push([current.urusan,current.urusanName,current.uraianKode,current.uraian,current.orgKode,current.skpd,current.programKode,current.program,current.kegiatanKode,current.kegiatan,current.subKode,current.sub,current.jenisKode,current.jenis,current.objekKode,current.objek,current.rincianKode,current.rincian,d,e,anggaran,realisasi]);
+  }
+ }
+ outputRows=out;filteredRows=out;page=0;
+ $("lra2RowCount").textContent=out.length.toLocaleString("id-ID");$("lra2SroCount").textContent=out.length.toLocaleString("id-ID");
+ $("lra2ResultPanel").hidden=false;$("lra2PreviewPanel").hidden=false;
+ $("lra2Status").textContent=`Selesai. ${out.length.toLocaleString("id-ID")} baris SRO berhasil dikonversi.`;
+ renderPreview();
+}
+function fmtNum(n){return new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
+function renderPreview(){
+ const start=page*pageSize, rows=filteredRows.slice(start,start+pageSize);
+ $("lra2TableHead").innerHTML="<tr>"+headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")+"</tr>";
+ $("lra2TableBody").innerHTML=rows.map(row=>"<tr>"+row.map((v,i)=>`<td class="${i>=20?"num":""}">${escapeHtml(i>=20?fmtNum(Number(v)||0):clean(v))}</td>`).join("")+"</tr>").join("");
+ const pages=Math.max(1,Math.ceil(filteredRows.length/pageSize));
+ $("lra2PageInfo").textContent=`Menampilkan ${filteredRows.length?start+1:0}–${Math.min(start+pageSize,filteredRows.length)} dari ${filteredRows.length.toLocaleString("id-ID")} baris`;
+ $("lra2PrevBtn").disabled=page===0;$("lra2NextBtn").disabled=page>=pages-1;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("lra2ProcessBtn").addEventListener("click",processData);
+$("lra2PrevBtn").addEventListener("click",()=>{if(page>0){page--;renderPreview()}});
+$("lra2NextBtn").addEventListener("click",()=>{if((page+1)*pageSize<filteredRows.length){page++;renderPreview()}});
+$("lra2SearchInput").addEventListener("input",e=>{const q=e.target.value.toLowerCase();filteredRows=outputRows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(q)));page=0;renderPreview()});
+$("lra2DownloadBtn").addEventListener("click",()=>{
+ if(!outputRows.length){alert("Tidak ada data SRO untuk diunduh.");return}
+ const aoa=[headers,...outputRows];
+ const ws=XLSX.utils.aoa_to_sheet(aoa);
+ ws["!cols"]=[{wch:14},{wch:42},{wch:18},{wch:42},{wch:26},{wch:42},{wch:18},{wch:48},{wch:20},{wch:48},{wch:23},{wch:48},{wch:20},{wch:32},{wch:20},{wch:32},{wch:24},{wch:48},{wch:26},{wch:55},{wch:20},{wch:20}];
+ ws["!autofilter"]={ref:`A1:V${aoa.length}`};ws["!freeze"]={xSplit:6,ySplit:1};
+ // Terapkan format angka untuk dua kolom nilai; kode tetap berupa teks.
+ for(let r=1;r<aoa.length;r++)for(let c=20;c<22;c++){const cell=XLSX.utils.encode_cell({r,c});if(ws[cell])ws[cell].z='#,##0.00'}
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"LRA Per Program");
+ XLSX.writeFile(wb,"LRA Per Program Format.xlsx");
+});
+$("lra2ResetBtn").addEventListener("click",()=>{sourceRows=[];outputRows=[];filteredRows=[];fileInput.value="";$("lra2FileName").textContent="";$("lra2Status").textContent="Belum ada file yang dipilih.";$("lra2ProcessBtn").disabled=true;$("lra2ResultPanel").hidden=true;$("lra2PreviewPanel").hidden=true});
+
+})();
 
 /* KONVERTER BIX */
 let bixFileObjs=[],bixRows=[],bixDate='';
